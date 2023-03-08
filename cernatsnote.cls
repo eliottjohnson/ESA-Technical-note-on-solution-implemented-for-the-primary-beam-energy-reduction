@@ -161,7 +161,7 @@
     \vskip\baselineskip
     {\large\raggedright\hyphenpenalty=10000\@author\par}
     \vskip\baselineskip
-    \footnotesize Keywords:
+    \footnotesize Reference:
     \parbox[t]{0.85\textwidth}{\raggedright\hyphenpenalty=10000
       \footnotesize\@keywords
       }
@@ -196,7 +196,7 @@
 
 \def\keywords#1{\gdef\@keywords{#1}}          % see \@maketitle
 
-\gdef\@keywords{{\tt CERN, CHIMERA, beam energy reduction, LET, heavy ion irradiation, radiation testing, LET, PS, magnetic field, scaling, rigidity}}
+\gdef\@keywords{{\tt ESA-TECQEC-SOW-022080}}
 
 
 
