@@ -1,6 +1,7 @@
 \documentclass{cernatsnote}
 \usepackage{siunitx}
 \usepackage[table,xcdraw]{xcolor}
+\usepackage{soul}
 %\usepackage[colorinlistoftodos]{todonotes}
 \usepackage{placeins}
 \usepackage{titlesec}
@@ -33,6 +34,33 @@
 
 \begin{abstract}
 This technical note describes a solution implemented for the primary beam energy adjustment for the CHIMERA project at CERN. The beam energy was varied by scaling the magnetic field in the Proton Synchrotron (PS) during acceleration and transport. The PS's magnet strengths were adjusted by a makerule that computes the magnetic field required for a given beam energy, allowing automatic scaling of magnets in F61 and the T8 transfer line. This note discusses the limitations of the system and presents the results of the beam energy measurements during the November 2022 run.
+
+\sethlcolor{yellow}
+\begin{table}[!htp]
+\centering
+{\tiny
+\begin{tabular}{@{}p{2.5cm}p{2cm}p{2cm}p{2.4cm}p{5cm}@{}}
+\toprule
+Contract name & Contract number - ESA & Contract number - CERN & Task & Technical Note or Report \\
+\midrule
+Development of High Energy Beam (range and LET) for Radiation Tests of Highly Integrated Electronics components &
+4000134554\linebreak/21/NL/KML/rk &
+KM5174\linebreak/KT/SY/273A &
+Task 1: CERN CHARM ion beam energy reduction &
+TN1: Technical note on solution implemented for the primary beam energy reduction\\
+&  &  & Task 2: Beam calibration and dosimetry & TR1: Test Report with calibration and dosimetry measurements\\
+ &  &  &  & TN2: Technical Note on the dosimetry methodologies and procedures for calibration and routine beam operations\\
+High Energy Beam Intensity Adjustment for SEE tests of COTS EEE Components & 4000136601\linebreak/21/NL/KML/rk & KM5450\linebreak/KT/SY/276R & Task 1: Primary beam intensity adjustments & \hl{TN1: Technical Note on solution implemented for the flux adjustments}\\
+ &  &  & Task 2: Beam calibration and dosimetry & TR1: Test report with initial and final results of calibration and dosimetry measurements, example of test report that will be provided for routine operation\\
+ &  &  & Task 3: Preparation of test execution process for industry & TN2: Technical note. Guideline for test users: with necessary information for external users to prepare and execute a test at the facility\\
+ &  &  &  & TR2: Test report of SEE tests\\
+ \bottomrule
+\end{tabular}
+}
+\caption{Summary of key technical requirements}
+\label{tab:technical_requirements}
+\end{table}
+
 \end{abstract}
 \\ \\ \\ 
 
