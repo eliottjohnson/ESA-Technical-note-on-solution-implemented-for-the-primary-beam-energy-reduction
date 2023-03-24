@@ -18,6 +18,11 @@
 \usepackage{rotating,tabularx}
 \usepackage{tikz}
 \usetikzlibrary{patterns}
+\usepackage{array}
+
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{threeparttable}
 
 \title{ESA Technical note on on solution implemented for the primary beam energy reduction}
 \author{
@@ -33,7 +38,12 @@
 \maketitle
 
 \begin{abstract}
-This technical note describes a solution implemented for the primary beam energy adjustment for the CHIMERA project at CERN. The beam energy was varied by scaling the magnetic field in the Proton Synchrotron (PS) during acceleration and transport. The PS's magnet strengths were adjusted by a makerule that computes the magnetic field required for a given beam energy, allowing automatic scaling of magnets in F61 and the T8 transfer line. This note discusses the limitations of the system and presents the results of the beam energy measurements during the November 2022 run.
+This technical note describes a solution implemented for the primary beam energy adjustment for the heavy ion irradiation activities in the CHARM facility project at CERN. The beam energy was varied by scaling the magnetic field in the Proton Synchrotron (PS) during acceleration and transport. The PS's magnet strengths were adjusted by an algorithm (makerule) that computes the magnetic field required for a given beam energy, allowing automatic scaling of magnets in F61 and the T8 transfer line. This note presents the results of the beam energy measurements during the November 2022 run and discusses the limitations of the system.
+
+\end{abstract}
+\\ \\ \\ 
+
+\newpage
 
 \sethlcolor{yellow}
 \begin{table}[!htp]
@@ -47,22 +57,19 @@ Development of High Energy Beam (range and LET) for Radiation Tests of Highly In
 4000134554\linebreak/21/NL/KML/rk &
 KM5174\linebreak/KT/SY/273A &
 Task 1: CERN CHARM ion beam energy reduction &
-TN1: Technical note on solution implemented for the primary beam energy reduction\\
+\hl{TN1: Technical note on solution implemented for the primary beam energy reduction}\\
 &  &  & Task 2: Beam calibration and dosimetry & TR1: Test Report with calibration and dosimetry measurements\\
  &  &  &  & TN2: Technical Note on the dosimetry methodologies and procedures for calibration and routine beam operations\\
-High Energy Beam Intensity Adjustment for SEE tests of COTS EEE Components & 4000136601\linebreak/21/NL/KML/rk & KM5450\linebreak/KT/SY/276R & Task 1: Primary beam intensity adjustments & \hl{TN1: Technical Note on solution implemented for the flux adjustments}\\
+High Energy Beam Intensity Adjustment for SEE tests of COTS EEE Components & 4000136601\linebreak/21/NL/KML/rk & KM5450\linebreak/KT/SY/276R & Task 1: Primary beam intensity adjustments & TN1: Technical Note on solution implemented for the flux adjustments\\
  &  &  & Task 2: Beam calibration and dosimetry & TR1: Test report with initial and final results of calibration and dosimetry measurements, example of test report that will be provided for routine operation\\
  &  &  & Task 3: Preparation of test execution process for industry & TN2: Technical note. Guideline for test users: with necessary information for external users to prepare and execute a test at the facility\\
  &  &  &  & TR2: Test report of SEE tests\\
  \bottomrule
 \end{tabular}
 }
-\caption{Summary of key technical requirements}
-\label{tab:technical_requirements}
 \end{table}
 
-\end{abstract}
-\\ \\ \\ 
+\newpage
 
 \begingroup
 \color{black}
@@ -72,24 +79,24 @@ High Energy Beam Intensity Adjustment for SEE tests of COTS EEE Components & 400
 \pagebreak
 
 \section{Introduction}
-In the field of radiation testing of electronic components, controlling the primary beam energy is a critical aspect of ensuring accurate and reliable results. The primary beam energy determines the Linear Energy Transfer (LET) of the incident particles, which in turn affects the type and amount of radiation-induced effects on the electronic components being tested. LET is a measure of the energy deposited by a particle as it travels through a material, and is related to the primary beam energy. By varying the primary beam energy, different ranges of LET are available to study the effects of radiation at different levels of energy deposition, which is important for understanding how electronic components will behave in different radiation environments. For example, in space applications, electronic components are exposed to high-energy particles with a wide range of LET values, and it is essential to understand how these particles will affect the performance and reliability of the components. Therefore, the ability to control the primary beam energy and explore different LET values is critical for accurately characterizing the radiation response of electronic components and designing robust systems for space and other radiation environments.
+In the field of radiation testing of electronic components, controlling the primary beam energy is a critical aspect of ensuring accurate and reliable results. For a given particle species, the primary beam energy determines the Linear Energy Transfer (LET), a measure of the energy deposited by a particle as it travels through a material, which in turn affects the type and amount of radiation-induced effects on the electronic components being tested. By varying the primary beam energy, different ranges of LET are available to study the effects of radiation at different levels of energy deposition, which is important for understanding how electronic components will behave in different radiation environments. For example, in space applications, electronic components are exposed to high-energy particles with a wide range of LET values, and it is essential to understand how these particles will affect the performance and reliability of the components. Therefore, the ability to control the primary beam energy and explore different LET values is critical for accurately characterizing the radiation response of electronic components and designing robust systems for space and other radiation environments.
 
-This technical note detailing the solution implemented for primary beam energy variation is an important milestone to providing a heavy ion irradiation programme at CERN because it provides a method for controlling primary beam energy and exploring a wide range of LET values. The variation of the primary beam energy was achieved by scaling the magnetic field in the Proton Synchrotron (PS) during acceleration by adjusting the PS's magnet strengths according to a makerule that computed the magnetic field required for a given beam energy. The makerule also allows for the automatic scaling of magnets in F61 and the T8 transfer line, which are required to transport the heavy ion beam to CHARM. The note details the various steps taken during the run, including characterization of the three beam energies, testing of the four Device Under Test (DUT) setups, and a degrader scan. Furthermore, the note presents the results of the beam energy measurements during the November 2022 run and discusses the limitations of the system.
+This technical note detailing the solution implemented for primary beam energy variation is an important milestone to providing a heavy ion irradiation program at CERN because it provides a method for controlling primary beam energy and exploring a wide range of LET values. The variation of the primary beam energy was achieved by scaling the magnetic field in the Proton Synchrotron (PS) during acceleration by adjusting the PS's magnet strengths according to a makerule that computed the magnetic field required for a given beam energy. The makerule also allows for the automatic scaling of magnets in F61 and the T8 transfer line, which are required to transport the heavy ion beam to CHARM. The note details the various steps taken during the run, including characterization of the three beam energies, testing of the four Device Under Test (DUT) setups, and a degrader scan. Furthermore, the note presents the results of the beam energy measurements during the November 2022 run and discusses the limitations of the system.
 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=1.0\textwidth]{images/CCC_eastt8_small.png}
-\caption{The CERN accelerator complex. The path of the lead ion beam used by CHIMERA is highlighted in color.}
+\caption{The CERN accelerator complex. The path of the lead ion beam used for the ion irradiation activity in CHARM is highlighted in color.}
 \label{fig:CCC}
 \end{figure}
 
 
 \section{Energy variation}
 
-The Proton Synchrotron (PS) is a crucial component of the accelerator complex, responsible for accelerating particles from the Proton Synchrotron Booster (PSB) to the Super Proton Synchrotron (SPS) and ultimately to the Large Hadron Collider (LHC). Additionally, the PS is capable of receiving and accelerating heavy ions from the Low Energy Ion Ring (LEIR) for extraction to the East Area, making it a versatile machine. RF cavities are used to accelerate charged particles, such as protons or Pb ions, to high energies, while 100 dipoles bend the beam around the PS's 628 m circumference \cite{gilardoni_fifty_2011}. The particles are then extracted using slow extraction through a beam line and transported to the CHARM facility, which houses the CHIMERA instruments.
+The Proton Synchrotron (PS) is a crucial component of the accelerator complex, responsible for accelerating particles from the Proton Synchrotron Booster (PSB) to the Super Proton Synchrotron (SPS) and ultimately to the Large Hadron Collider (LHC). Additionally, the PS is capable of receiving and accelerating heavy ions from the Low Energy Ion Ring (LEIR) for extraction to the East Area, making it a versatile machine. RF cavities are used to accelerate charged particles, such as protons or lead ions, to high energies, while 100 dipoles bend the beam around the PS's 628 m circumference \cite{gilardoni_fifty_2011}. The particles are then extracted using slow extraction through a beam line and transported to the CHARM facility, which houses the beam instruments and irradiation setups. .
 \\
 
-The beam energy refers to the kinetic energy per nucleon $E_{kin}$ of the charged particle beam. For an ion beam, the total kinetic energy, denoted $E_{kin, TOT}$, can be obtained by multiplying $E_{kin}$ by the atomic mass number $A$ (where $A = Z + N$, representing the total number of protons $Z$ and neutrons $N$ in the ion).  The total momentum for an ion beam is \cite{chao_handbook_2013}
+The beam energy refers to the kinetic energy per nucleon $E_{kin}$ of the charged particle beam. For an ion beam, the total kinetic energy, denoted $E_{kin, TOT}$, can be obtained by multiplying $E_{kin}$ by the atomic mass number $A$ (where $A = Z + N$, representing the total number of protons $Z$ and neutrons $N$ in the nucleus). The total momentum for an ion beam is given by \cite{chao_handbook_2013}
 
 $$pc={E_{0}\sqrt{\gamma^{2}-1}}$$
 
@@ -97,7 +104,7 @@ $$pc = E_{0}\sqrt{\left [ \left( \frac{E_{kin, TOT}}{E_{0}}+1\right )^{2}-1\righ
 where, $E_{0}$ is the rest mass of the ion and $\gamma=\frac{E}{E_{0}}=\frac{E_{0}+E_{kin}}{E_{0}} = \frac{E_{kin}}{E_{0}}+1$
 \\
 
-CHIMERA uses a lead ion beam. In the PS the beam is a partially stripped ion beam of Pb$^{54+}$, which means that 28 $e^{-}$ remain on the ion for the isotope A=208.
+The ion irradiation activity in CHARM (CHIMERA) uses a lead ion beam. In the PS the beam is a partially stripped ion beam of Pb$^{54+}$, which means that 28 $e^{-}$ remain on the ion for the isotope A=208.
 \\
 
 \begin{figure}
@@ -145,34 +152,45 @@ $$B\rho \text{ [T m]} = 3.3356\cdot p/q \text{ [GeV/c]}$$
 where for the PS, $\rho = 70.0789$ m. This formula is used to calculate the bending B-field in the PS dipoles.
 \\
 
-For the ESA run, three energies were chosen: 1000, 750 and 650 MeV/$u$, and the associated magnetic field (B-field) required were calculated, as shown in Fig. \ref{fig:lookup table} and Table \ref{table:KE_table}. These kinetic energies refer to those during flat-top in the PS and not at the Device Under Test (DUT) in CHARM. Interaction with vacuum windows, instruments, and air molecules (several regions in the transfer line are out of vacuum) will lower the beam energy, and at the DUT via energy straggling. A FLUKA model simulation or degrader measurement is needed to estimate the beam energy. Since the ion beam is partially stripped in the PS and becomes fully stripped after passing through the exit vacuum window in the F61 transfer line located after the first quadrupole in the transfer line (Q74L), different rigidities are required for acceleration and transport, respectively. The magnets in the transfer line must be pulsed with a rigidity matched to the fully stripped ion beam.
+For the 2022 CHIMERA run, three primary kinetic energies at flat-top in the PS were selected: 1000, 750, and 650 MeV/$u$, and the associated required magnetic fields (B-fields) were calculated, as shown in Fig. \ref{fig:lookup table} and Table \ref{tab:KE_table}. However, interaction with vacuum windows, instruments, and air molecules during transport through the transfer line lowers the beam's kinetic energy. Therefore, a FLUKA model simulation is required to determine the beam energy at the Device Under Test (DUT) in CHARM. The FLUKA simulation model includes rigidities for each of the primary energies, along with an accurate representation of the material budget that the beam crosses when transported through the transfer line, which includes all vacuum windows, beam instrumentation, and air regions. The simulations reveal that the compound effect of all the materials in the beam causes energy straggling, resulting in significantly lower beam kinetic energies at the DUT position. Table \ref{tab:KE_table} presents the primary kinetic energy degradation from the PS to the DUT. Consequently, the range of beam LETs that can be obtained by varying the beam energy is larger, which is one of the fundamental radiation effects testing metrics. The simulations show that by varying the primary beam energy extracted from the PS, the resulting LET at the DUT can vary between 10 and 30 MeVcm$^2$/mg. When additional dedicated sheets of material, such as PPMA, are placed in the beam, it is possible to achieve LETs greater than 30 MeVcm$^2$/mg.
+\\
 
-Significant effort has been invested in automating the scaling of magnets in F61 and the T8 transfer line to reduce the operational overhead of operating the irradation facility at different beam energies. Removal from operation of the Pole Face Windings (PFW) in the PS was necessary to allow for continuous energy variation as they do not scale with beam rigidity in a linear way. The T8 transfer line has been converted to Pulse to Pulse Modulation (PPM) which means that the magnet strengths are USER based and different USERS (or energy) can be sent to the East Area in parallel. In non-PPM mode, only a single USER or type of beam could be used. A makerule is used to compute the correct strength to apply based on the PS B-field (and thus beam energy). The makerule computes a partially stripped momentum for the first quadrupole in F61 and a second momentum for a fully stripped ion beam for the rest of the transfer line down to CHARM. This automatic scaling is highly advantageous, as energy scans can be performed by simply adjusting the B-field at flat-top of the PS. However, some limitations exist, such as the need for occasional manual corrections to the extraction path and SMH57 and SMH61, as well as the fact that the bending to the East Dump can not be associated with a makerule (only a scalar current can be set).
+Significant effort has been invested in automating the scaling of magnets in F61 and the T8 transfer line to reduce the operational overhead of operating the irradiation facility at different beam energies. The removal from operation of the Pole Face Windings (PFW) in the PS was necessary to allow for continuous energy variation as they do not scale with beam rigidity in a linear way. The T8 transfer line has been converted to Pulse to Pulse Modulation (PPM), which means that the magnet strengths are user-based and different users (or energies) can be sent to the East Area in parallel. This enable the use of different beams during the same super-cycle, whereas in non-PPM mode, only a single user or type of beam could be used. A makerule is used to compute the correct strength to apply based on the PS B-field (and thus beam energy).
+\\
+
+Moreover, since the ion beam is partially stripped in the PS and becomes fully stripped after passing through the exit vacuum window in the F61 transfer line, located after the first quadrupole in the transfer line (Q74L), different rigidities are required for acceleration and transport, respectively. Therefore, the magnets in the transfer line must be pulsed with a rigidity matched to the fully stripped ion beam. The makerule computes a partially stripped momentum for the first quadrupole in F61 and a second momentum for a fully stripped ion beam for the rest of the transfer line down to CHARM. This automatic scaling is highly advantageous, as energy scans can be performed by merely adjusting the B-field at the flat-top of the PS.
+\\
+
+However, there are some limitations to this automatic scaling process. For example, the extraction path often requires occasional manual corrections, which involves adjusting the strength of the septum magnets used for extraction, namely SMH57 and SMH61. Additionally, the bending to the East Dump can not be associated with a makerule, and only a scalar current can be set.
 \\
 
 \begin{figure}[!htb]
 \centering
 \includegraphics[width=1.0\textwidth]{images/PS_BEAM_ENERGY/kinetic_energy_lookup_chimera.png}
-\caption{Lookup table for the lead ion beam flat-top in the Proton Synchrotron (PS). The magnetic field required for acceleration to three different energies (1000, 750, and 650 MeV/nucleon) as well as energy scan measurements to the East Dump is shown.}
+\caption{Lookup table for the lead ion beam flat-top in the Proton Synchrotron (PS). The magnetic field required for acceleration to three different energies (1000, 750, and 650 MeV/$u$) as well as energy scan measurements to the East Dump is shown.}
 \label{fig:lookup table}
 \end{figure}
 
-\begin{table}[h!]
+\begin{table}[!htbp]
 \centering
-\begin{tabular}{rrrrl}
+\begin{threeparttable}
+\label{tab:KE_table}
+\begin{tabular}{@{}m{1.6cm}m{1.6cm}m{2.8cm}m{2.8cm}m{4cm}@{}}
 \toprule
- $E_{kin}$ [MeV/nucleon] &  $\frac{pc}{54}$ [GeV] &  $\frac{pc}{82}$ [GeV] &  PS B-field [G] & USER\\
-\midrule
-  1000 &                        6.517 &                    4.292 &        3102 & CPS.USER.EAST4 \\
-   750 &                        5.392 &                    3.551 &        2566 & CPS.USER.EAST3 \\
-   650 &                        4.923 &                    3.242 &        2343 &   CPS.USER.MD5 \\
-\bottomrule
+$E^{PS}_{kin}$ {[}MeV/$u${]} & $E^{DUT}_{kin}$\tnote{$\dagger$} [MeV/$u$] & $LET^{PS}$\tnote{$\dagger$} [MeV$\cdot$~cm$^2$/mg] & $LET^{DUT}$\tnote{$\dagger$} [MeV$\cdot$~cm$^2$/mg] & USER \\ \midrule
+1000 & 600 & 11 & 13 & CPS.USER.EAST4 \\
+750 & 300 & 12 & 18 & CPS.USER.EAST3 \\
+650 & 150 & 13 & 27 & CPS.USER.MD5 \\ \bottomrule
 \end{tabular}
-\caption{Table showing the kinetic energy used during the ESA November 2022 run. The term 'USER' refers to the settings the PS is loaded with. A USER profile saves all magnet strengths, which can be easily accessed and applied to the PS when that particular USER is called, similar to a preset configuration.}
-\label{table:KE_table}
+\begin{tablenotes}
+\item[$\dagger$] FLUKA simulation.
+\end{tablenotes}
+\caption{Table showing the kinetic energy and LETs used during the ESA November 2022 run at flat-top in the PS and at the DUT. The term 'USER' refers to the settings the PS is loaded with. A USER profile saves all magnet strengths, which can be easily accessed and applied to the PS when that particular USER is called, similar to a preset configuration.}
+\end{threeparttable}
 \end{table}
 
-Figure \ref{fig:bfield} illustrates the magnetic field profile of the main dipoles in the Proton Synchrotron (PS) produced by the main magnet power supply (POPS). The profile includes two distinct regions - the injection plateau where protons are injected from LEIR, and the flat-top extraction plateau where protons have achieved maximum energy and are ready for extraction. Note that the spike at the end, which was introduced to overcome certain limitations of POPS, is irrelevant to the extraction process and can be disregarded.
+
+Figure \ref{fig:bfield} illustrates the magnetic field profile of the main dipoles in the Proton Synchrotron (PS) produced by the main magnet power supply (POPS). The profile includes two distinct regions - the injection plateau where ions are injected from LEIR, and the flat-top extraction plateau where ions have achieved maximum energy and are ready for extraction. Note that the spike at the end, which was introduced to overcome certain limitations of POPS, is irrelevant to the extraction process and can be disregarded.
 
 \begin{figure}[!htb]
 \centering
@@ -181,7 +199,7 @@ Figure \ref{fig:bfield} illustrates the magnetic field profile of the main dipol
 \label{fig:bfield}
 \end{figure}
 
-During the CHIMERA ion run in November, the experiment lasted for 5 days, from the afternoon of Wednesday 23 November to the  morning of Monday 28 November. The energies used during the run were 1000, 750, and 650 MeV/$u$ and were used for almost the same amount of time. The 650 MeV/$u$ beam was used for 36\% of the time, the 750 MeV/$u$ beam was used for 28\%, and the 1000 MeV/$u$ beam was used for 35\%. The run was divided into specific tasks and timeframes, see Fig. \ref{fig:timestamp_energies}. Wednesday and Thursday were used for beam preparation, Friday and Saturday were devoted to ESA's experiments, and Sunday was used for backup or for additional machine development. During the first few hours of the beam time, the focus was on characterizing the three energies and varying the intensity using the standard beam instruments. The next few hours were dedicated to testing all four DUTs sequentially for all energies, followed by a run overnight to accumulate statistics on the Renesas memory \cite{noauthor_rmlv0816bgsa_nodate}. On Thursday morning, the team had the option to either change to a second degrader thickness or another set of DUTs, or do a "degrader scan." Friday and possibly part of Saturday were dedicated to ESA's experiment. The rest of Saturday night and Sunday were left for backup and for optics measurements.
+During the CHIMERA ion run in November, the experiment lasted for 5 days, from the afternoon of Wednesday 23 November to the  morning of Monday 28 November. The energies used during the run were 1000, 750, and 650 MeV/$u$ and were used for almost the same amount of time. The 650 MeV/$u$ beam was used for 36\% of the time, the 750 MeV/$u$ beam was used for 28\%, and the 1000 MeV/$u$ beam was used for 35\%. The run was divided into specific tasks and timeframes, see Fig. \ref{fig:timestamp_energies}. Wednesday and Thursday were used for beam preparation, Friday and Saturday were devoted to ESA's experiments, and Sunday was used for backup or for additional machine development. During the first few hours of the beam time, the focus was on characterizing the three energies and varying the intensity using the standard beam instruments. The next few hours were dedicated to testing all four DUTs sequentially for all energies, followed by a run overnight to accumulate statistics on the Renesas memory \cite{noauthor_rmlv0816bgsa_nodate}. On Thursday morning, the team changed the degrader thickness twice. Friday and if needed part of Saturday were dedicated to ESA's experiment. The rest of Saturday night and Sunday were left for backup and for optics measurements.
 
 \begin{figure}[!htb]
 \centering
@@ -190,7 +208,7 @@ During the CHIMERA ion run in November, the experiment lasted for 5 days, from t
 \label{fig:timestamp_energies}
 \end{figure}
 
-Following the ESA run, an automatic script was used to ramp the beam energy for further development purposes. A dedicated energy scan was conducted on the diode using 5 different beam energies, ranging from 775 MeV/$u$ to 900 MeV/$u$. A separate experiment was carried out to measure the lowest beam energy that could be recorded at the East Dump, which was found to be 283 MeV/$u$. The main limitation was that the bending magnet to the dump is not scaled with momentum, and hand corrections were needed to propagate the beam to the dump, as well as the beam spot on the BTV being large and weak at this energy, which made observation difficult. Lower energies could be tried out in the future.
+Following the ESA run, an automatic script was used to ramp the beam energy for further development purposes. A dedicated energy scan was conducted on the diode using 5 different beam energies, ranging from 775 MeV/$u$ to 900 MeV/$u$. A separate experiment was carried out to measure the lowest beam energy that could be recorded at the East Dump, which was found to be 283 MeV/$u$. The main limitation was that the bending magnet to the dump is not scaled with momentum, and hand corrections were needed to propagate the beam to the dump (which could be scaled and set by a script), as well as the beam spot on the BTV being large and weak at this energy, which made observation difficult. Lower energies could be tried out in the future.
 
 \begin{figure}[!htb]
     \centering
@@ -215,7 +233,7 @@ Following the ESA run, an automatic script was used to ramp the beam energy for 
 
 \section{Conclusion}
 
- The primary beam energy determines the Linear Energy Transfer (LET) of the incident particles, which affects the type and amount of radiation-induced effects on the electronic components being tested. Controlling the primary beam energy is therefore crucial for radiation testing of electronic components.In the context of the CHIMERA project at CERN, the primary beam energy was varied by scaling the magnetic field in the Proton Synchrotron (PS) during acceleration and transport and with the PFWs removed from operation. The PS's magnet strengths were adjusted by a makerule that computed the magnetic field required for a given beam energy, allowing automatic scaling of magnets in F61 and the T8 transfer line. The November 2022 run of CHIMERA demonstrated the effectiveness of the system, with the successful testing of four Device Under Test (DUT) setups, a degrader scan, and measurements of the three beam energies. The system has some limitations, such as the need for occasional manual corrections and the bending to the East Dump not being associated with a makerule, but overall, it provides an important solution for controlling primary beam energy and exploring a wide range of LET values.
+ The primary beam energy determines the Linear Energy Transfer (LET) of the incident particles, which affects the type and amount of radiation-induced effects on the electronic components being tested. Controlling the primary beam energy is therefore crucial for radiation testing of electronic components. In the context of the CHIMERA project at CERN, the primary beam energy was varied by scaling the magnetic field in the Proton Synchrotron (PS) during acceleration and transport and with the PFWs removed from operation. The PS's magnet strengths were adjusted by a makerule that computed the magnetic field required for a given beam energy, allowing automatic scaling of magnets in F61 and the T8 transfer line. The November 2022 run of CHIMERA demonstrated the effectiveness of the system, with the successful testing of four Device Under Test (DUT) setups, a degrader scan, and measurements of the three beam energies. The system provides an important solution for controlling primary beam energy and exploring a wide range of LET values.
 
 \bibliography{references}
 \bibliographystyle{IEEEtran}
