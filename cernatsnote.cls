@@ -187,7 +187,7 @@
 
 \def\documentlabel#1{\gdef\@documentlabel{\large\bfseries #1}}
                                           % see \@maketitle
-\gdef\@documentlabel{\tt Preliminary draft\ \timeofday\ \today}
+\gdef\@documentlabel{\tt V 1.1}
 
 \def\emaila#1{\gdef\@emaila{#1}}          % see \@maketitle
 \gdef\@emaila{\hbox{}}
@@ -196,7 +196,7 @@
 
 \def\keywords#1{\gdef\@keywords{#1}}          % see \@maketitle
 
-\gdef\@keywords{{\tt ESA-TECQEC-SOW-022080}}
+\gdef\@keywords{{\tt ESA-TECQEC-SOW-022080, EDMS: 2872683}}
 
 
 

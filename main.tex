@@ -17,6 +17,7 @@
 \usepackage{multirow}
 \usepackage{rotating,tabularx}
 \usepackage{tikz}
+\usetikzlibrary{arrows}
 \usetikzlibrary{patterns}
 \usepackage{array}
 
@@ -24,7 +25,13 @@
 \usepackage{graphicx}
 \usepackage{threeparttable}
 
-\title{ESA Technical note on on solution implemented for the primary beam energy reduction}
+\newcommand\ytl[2]{%
+  \parbox[b]{8em}{\hfill{\color{black}#1}~$\cdots\cdots$~}%
+  \makebox[0pt][c]{$\bullet$}\vrule\quad%
+  \parbox[c]{8.5cm}{\vspace{7pt}\color{black}\raggedright #2.\\[7pt]}\\[-3pt]%
+}
+
+\title{TN1 Technical note on solution implemented for the primary beam energy reduction}
 \author{
 	E. Johnson, P.A. Arrutia Sota, K. Bilko, M. Delrieux, N. Emriskova,\\ A. Waets, A. Coronetti,  M.A. Fraser, R. Garcia Alia\; \\		
 	CERN, CH-1211 Geneva, Switzerland
@@ -39,7 +46,6 @@
 
 \begin{abstract}
 This technical note describes a solution implemented for the primary beam energy adjustment for the heavy ion irradiation activities in the CHARM facility project at CERN. The beam energy was varied by scaling the magnetic field in the Proton Synchrotron (PS) during acceleration and transport. The PS's magnet strengths were adjusted by an algorithm (makerule) that computes the magnetic field required for a given beam energy, allowing automatic scaling of magnets in F61 and the T8 transfer line. This note presents the results of the beam energy measurements during the November 2022 run and discusses the limitations of the system.
-
 \end{abstract}
 \\ \\ \\ 
 
@@ -57,8 +63,8 @@ Development of High Energy Beam (range and LET) for Radiation Tests of Highly In
 4000134554\linebreak/21/NL/KML/rk &
 KM5174\linebreak/KT/SY/273A &
 Task 1: CERN CHARM ion beam energy reduction &
-\hl{TN1: Technical note on solution implemented for the primary beam energy reduction}\\
-&  &  & Task 2: Beam calibration and dosimetry & TR1: Test Report with calibration and dosimetry measurements\\
+TN1: Technical note on solution implemented for the primary beam energy reduction\\
+&  &  & Task 2: Beam calibration and dosimetry & \hl{TR1: Test Report with calibration and dosimetry measurements}\\
  &  &  &  & TN2: Technical Note on the dosimetry methodologies and procedures for calibration and routine beam operations\\
 High Energy Beam Intensity Adjustment for SEE tests of COTS EEE Components & 4000136601\linebreak/21/NL/KML/rk & KM5450\linebreak/KT/SY/276R & Task 1: Primary beam intensity adjustments & TN1: Technical Note on solution implemented for the flux adjustments\\
  &  &  & Task 2: Beam calibration and dosimetry & TR1: Test report with initial and final results of calibration and dosimetry measurements, example of test report that will be provided for routine operation\\
@@ -77,6 +83,21 @@ High Energy Beam Intensity Adjustment for SEE tests of COTS EEE Components & 400
 \endgroup
 
 \pagebreak
+
+\section{History of Changes}
+
+\noindent
+\begin{tabularx}{\textwidth}{|c|c|X|}
+\hline
+\textbf{Version} & \textbf{Date} & \textbf{Changes} \\
+\hline
+1.0 & 24-03-2023 & Initial document creation. \\
+\hline
+1.1 & 15-05-2023 &  Added information on unexpected energy change. Added timeline with different milestones and MDs.\\
+\hline
+\end{tabularx}
+
+\newpage
 
 \section{Introduction}
 In the field of radiation testing of electronic components, controlling the primary beam energy is a critical aspect of ensuring accurate and reliable results. For a given particle species, the primary beam energy determines the Linear Energy Transfer (LET), a measure of the energy deposited by a particle as it travels through a material, which in turn affects the type and amount of radiation-induced effects on the electronic components being tested. By varying the primary beam energy, different ranges of LET are available to study the effects of radiation at different levels of energy deposition, which is important for understanding how electronic components will behave in different radiation environments. For example, in space applications, electronic components are exposed to high-energy particles with a wide range of LET values, and it is essential to understand how these particles will affect the performance and reliability of the components. Therefore, the ability to control the primary beam energy and explore different LET values is critical for accurately characterizing the radiation response of electronic components and designing robust systems for space and other radiation environments.
@@ -181,9 +202,9 @@ However, there are some limitations to this automatic scaling process. For examp
 \begin{tabular}{@{}m{1.6cm}m{1.6cm}m{2.8cm}m{2.8cm}m{4cm}@{}}
 \toprule
 $E^{PS}_{kin}$ {[}MeV/$u${]} & $E^{DUT}_{kin}$\tnote{$\dagger$} [MeV/$u$] & $LET^{PS}$\tnote{$\dagger$} [MeV$\cdot$~cm$^2$/mg] & $LET^{DUT}$\tnote{$\dagger$} [MeV$\cdot$~cm$^2$/mg] & USER \\ \midrule
-1000 & 600 & 11 & 13 & CPS.USER.EAST4 \\
-750 & 300 & 12 & 18 & CPS.USER.EAST3 \\
-650 & 150 & 13 & 27 & CPS.USER.MD5 \\ \bottomrule
+1000 & 605 & 11.7 & 13.2 & CPS.USER.EAST4 \\
+750 & 300 & 12.6 & 18.2 & CPS.USER.EAST3 \\
+650 & 140 & 13.2 & 26.6 & CPS.USER.MD5 \\ \bottomrule
 \end{tabular}
 \begin{tablenotes}
 \item[$\dagger$] FLUKA simulation.
@@ -228,6 +249,7 @@ Following the ESA run, an automatic script was used to ramp the beam energy for 
     \end{minipage}
 \end{figure}
 
+During the ESA run, there were two instances where the displayed energy did not match the selected energy. This discrepancy occurred because multiple supercycles, approximately 5-10, are preprogrammed in anticipation of the day's needs and can be swiftly swapped based on the demands of the SPS and LHC. CHIMERA operated with three different cycles, each corresponding to a particular energy. With this system, whenever an energy change is required, the operator in the CCC must manually swap the ion cycle to match the correct energy in the current supercycle. It is also considered good practice to manually change the stack of preprogrammed supercycles to reflect the newly selected energy. However, this process is time-consuming and error-prone, especially if energy changes are frequent. The issue arose when a supercycle swap was made, and the operator either lacked the time or forgot to replace the ion cycles with the appropriate energy. Consequently, for a few spills, the incorrect energy was played. Although the issue was quickly identified and rectified both times, it's clear that an improvement is needed. One solution is to have a single ion cycle and implement an automatic script to adjust the energy. This is the preferred solution and will be implemented for the next ion run. For sensitive materials, an additional interlock that blocks any beam not at the correct energy could be implemented, provided it aligns with the given requirements.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% Conclusion %%%%%%%%%%%%%%
@@ -236,6 +258,26 @@ Following the ESA run, an automatic script was used to ramp the beam energy for 
 \section{Conclusion}
 
  The primary beam energy determines the Linear Energy Transfer (LET) of the incident particles, which affects the type and amount of radiation-induced effects on the electronic components being tested. Controlling the primary beam energy is therefore crucial for radiation testing of electronic components. In the context of the CHIMERA project at CERN, the primary beam energy was varied by scaling the magnetic field in the Proton Synchrotron (PS) during acceleration and transport and with the PFWs removed from operation. The PS's magnet strengths were adjusted by a makerule that computed the magnetic field required for a given beam energy, allowing automatic scaling of magnets in F61 and the T8 transfer line. The November 2022 run of CHIMERA demonstrated the effectiveness of the system, with the successful testing of four Device Under Test (DUT) setups, a degrader scan, and measurements of the three beam energies. The system provides an important solution for controlling primary beam energy and exploring a wide range of LET values.
+
+\section{Timeline}
+
+\begin{table}[H]
+\caption{Timeline of solution implemented for the primary beam energy reduction.}
+\centering
+\begin{minipage}[t]{.7\linewidth}
+\color{gray}
+\rule{\linewidth}{1pt}
+\ytl{Week 39}{Calculation of the PS main unit magnetic field required per beam energy}
+\ytl{Week 40}{Stable beams at three different energies (1, 2 and 5.4 GeV/u)}
+\ytl{Week 41}{First 750 MeV/u beam transmitted to MWPC}
+\ytl{Week 42}{First 500 MeV/u beam. 400 MeV/u large and weak beam on East dump. Quadrupole scan on East Dump with 500 and 750 MeV/u beam}
+\ytl{Week 43}{Dedicated Pb 750 MeV/u beam to CHARM}
+\ytl{Week 45}{New beams with RFKO for ESA run: 650, 750 and 1000 MeV/u}
+\ytl{Week 48}{ESA November Run}
+\bigskip
+\rule{\linewidth}{1pt}%
+\end{minipage}%
+\end{table}
 
 \bibliography{references}
 \bibliographystyle{IEEEtran}
