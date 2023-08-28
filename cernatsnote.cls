@@ -145,7 +145,7 @@
     \setlength{\parindent}{0pt}
     \begin{tabular}[t]{@{}c@{}}
       \adjustbox{valign=c}{\includegraphics[width=20mm]{images/cernlogo.eps}} \quad
-      \adjustbox{valign=c}{\includegraphics[width=40mm]{images/ESA_logo_2020_Deep.eps}} \\
+      %\adjustbox{valign=c}{\includegraphics[width=40mm]{images/ESA_logo_2020_Deep.eps}} \\
     \end{tabular}
     \hfill
     \begin{tabular}[b]{r@{}}
@@ -187,7 +187,7 @@
 
 \def\documentlabel#1{\gdef\@documentlabel{\large\bfseries #1}}
                                           % see \@maketitle
-\gdef\@documentlabel{\tt V 1.1}
+\gdef\@documentlabel{\tt V 1.3}
 
 \def\emaila#1{\gdef\@emaila{#1}}          % see \@maketitle
 \gdef\@emaila{\hbox{}}
@@ -196,7 +196,7 @@
 
 \def\keywords#1{\gdef\@keywords{#1}}          % see \@maketitle
 
-\gdef\@keywords{{\tt ESA-TECQEC-SOW-022080, EDMS: 2872683}}
+\gdef\@keywords{{\tt ESA contract number: 4000134554/21/NL/KML/rk, CERN contract number: KM5174/KT/SY/273A, EDMS: 2872683}}
 
 
 
