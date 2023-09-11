@@ -187,7 +187,7 @@
 
 \def\documentlabel#1{\gdef\@documentlabel{\large\bfseries #1}}
                                           % see \@maketitle
-\gdef\@documentlabel{\tt V 1.3}
+\gdef\@documentlabel{\tt V 1.4}
 
 \def\emaila#1{\gdef\@emaila{#1}}          % see \@maketitle
 \gdef\@emaila{\hbox{}}
